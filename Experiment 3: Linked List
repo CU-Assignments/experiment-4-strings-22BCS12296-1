@@ -1,0 +1,169 @@
+//21. Merge Two Sorted Lists 
+
+class Solution {
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode  l1 = new ListNode();   
+        ListNode current = l1;
+        while(list1!=null&&list2!=null){
+            if(list1.val<list2.val){
+                current.next=list1;
+                list1=list1.next;
+            }else{
+                current.next=list2;
+                list2=list2.next;
+            }
+
+            current=current.next;
+        }
+
+        if(list1!=null){
+            current.next=list1;
+        }else{
+            current.next=list2;
+        }
+
+        return l1.next;
+    }
+}
+
+
+//82. Remove Duplicates from Sorted List II
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode res = new ListNode(0,head);
+        ListNode prev = res;
+
+        while(head != null && head.next != null){
+            if(head.next.val == head.val){
+                while(head.next != null && head.next.val == head.val){
+                    head = head.next;
+                }
+                prev.next = head.next;
+            }else{
+                prev = prev.next;
+            }
+            head = head.next; 
+        }
+        return res.next;
+    }
+}
+
+//146. LRU Cache
+class LRUCache {
+    class Node{
+        int key;
+        int value;
+
+        Node prev;
+        Node next;
+
+        Node(int key, int value){
+            this.key= key;
+            this.value= value;
+        }
+    }
+
+    public Node[] map;
+    public int count, capacity;
+    public Node head, tail;
+    
+    public LRUCache(int capacity) {
+        
+        this.capacity= capacity;
+        count= 0;
+        
+        map= new Node[10_000+1];
+        
+        head= new Node(0,0);
+        tail= new Node(0,0);
+        
+        head.next= tail;
+        tail.prev= head;
+        
+        head.prev= null;
+        tail.next= null;
+    }
+    
+    public void deleteNode(Node node){
+        node.prev.next= node.next;
+        node.next.prev= node.prev;       
+        
+        return;
+    }
+    
+    public void addToHead(Node node){
+        node.next= head.next;
+        node.next.prev= node;
+        node.prev= head;
+        
+        head.next= node;      
+        
+        return;
+    }
+    
+    public int get(int key) {
+        
+        if( map[key] != null ){
+            
+            Node node= map[key];
+            
+            int nodeVal= node.value;
+            
+            deleteNode(node);
+            
+            addToHead(node);
+            
+            return nodeVal;
+        }
+        else
+            return -1;
+    }
+    
+    public void put(int key, int value) {
+        
+        if(map[key] != null){
+            
+            Node node= map[key];
+            
+            node.value= value;
+            
+            deleteNode(node);
+            
+            addToHead(node);
+            
+        } else {
+            
+            Node node= new Node(key,value);
+            
+            map[key]= node;
+            
+            if(count < capacity){
+                count++;
+                addToHead(node);
+            } 
+            else {
+                
+                map[tail.prev.key]= null;
+                deleteNode(tail.prev);
+                
+                addToHead(node);
+            }
+        }
+        
+        return;
+    }
+    
+}
+
